@@ -10,18 +10,6 @@ import Series from "./pages/Series";
 import Bookmarks from "./pages/Bookmarks";
 import About from "./pages/About";
 
-function ProtectedRoute({ children, redirectTo = '/login', isAuthenticated }) {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(redirectTo);
-    }
-  }, [isAuthenticated, navigate, redirectTo]);
-
-  return children;
-}
-
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [search, setSearch] = useState('');
@@ -30,35 +18,25 @@ function App() {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
 
-    if (storedToken) {
+    if (!storedToken) {
+      navigate('/login'); // Redirect to login if no token found
+    } else {
       setToken(storedToken);
-      navigate('/')
-    } 
-      if (!localStorage.getItem('token')) {
-        navigate('/login');
-        setToken('');
-      }
+    }
   }, []);
 
   return (
     <>
       <Routes>
-        <Route path="/signup" element={<Signup />} />
+        {!token && <Route path="/signup" element={<Signup />} />}
         {!token && <Route path="/login" element={<Login />} />}
         <Route path="/" element={<Layout setSearch={setSearch} />}>
-          <Route
-            index
-            element={
-              <ProtectedRoute isAuthenticated={token ? true : false}>
-                <Home search={search}></Home>
-              </ProtectedRoute>
-            }
-          />
-          <Route path="movie" element={<Movie search={search}/>} />
-          <Route path="series" element={<Series search={search}/>} />
-          <Route path="bookmarks" element={<Bookmarks search={search}/>} />
+          <Route index element={<Home search={search} />} />
+          <Route path="movie" element={<Movie search={search} />} />
+          <Route path="series" element={<Series search={search} />} />
+          <Route path="bookmarks" element={<Bookmarks search={search} />} />
+          <Route path="about" element={<About />} />
         </Route>
-        <Route path="about" element={<About />} />
       </Routes>
     </>
   );
