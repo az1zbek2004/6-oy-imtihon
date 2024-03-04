@@ -35,8 +35,8 @@ function App() {
           <Route path="movie" element={<Movie search={search} />} />
           <Route path="series" element={<Series search={search} />} />
           <Route path="bookmarks" element={<Bookmarks search={search} />} />
-          <Route path="about" element={<About />} />
         </Route>
+        <Route path="about" element={<About />} />
       </Routes>
     </>
   );
